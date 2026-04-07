@@ -1,0 +1,39 @@
+{% extends "accounts/layout.html" %}
+
+{% block title %}Dashboard - E-Book Store{% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="#">E-Book Store</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a href="{% url 'accounts:profile' %}" class="nav-link">Profile</a></li>
+            <li class="nav-item"><a href="{% url 'accounts:logout' %}" class="nav-link">Logout</a></li>
+        </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+    <h2>Welcome, {{ request.user.username }}</h2>
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Recent Activity</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Viewed Books: Fiction, Fantasy</li>
+                    <li class="list-group-item">Wishlist: The Lost Realm</li>
+                    <li class="list-group-item">Ratings: 5 stars</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card p-3">
+                <h5>Dashboard Overview</h5>
+                <p>Access your profile, wishlist, and recent activity here.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
