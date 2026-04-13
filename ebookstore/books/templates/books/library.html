@@ -1,0 +1,28 @@
+{% extends 'books/layout.html' %}
+
+{% block content %}
+
+<h2>My Library 📚</h2>
+
+<div class="row">
+  {% for item in books %}
+  <div class="col-md-3">
+    <div class="card p-2 mb-3">
+
+      <img src="{{ item.book.cover.url }}" class="img-fluid">
+
+      <h5>{{ item.book.title }}</h5>
+      <p>{{ item.book.author }}</p>
+
+      <a href="{% url 'book_detail' item.book.id %}" class="btn btn-primary btn-sm">
+        View Book
+      </a>
+
+    </div>
+  </div>
+  {% empty %}
+    <p>You have no books yet.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

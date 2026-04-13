@@ -1,0 +1,48 @@
+{% extends 'books/layout.html' %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-md-4">
+        <img src="{{ book.cover.url }}" class="img-fluid">
+    </div>
+
+    <div class="col-md-8">
+        <h2>{{ book.title }}</h2>
+        <p><strong>Author:</strong> {{ book.author }}</p>
+        <p><strong>Price:</strong> ${{ book.price }}</p>
+
+        <hr>
+
+        <h4>Description</h4>
+        <p>{{ book.description }}</p>
+
+        <button class="btn btn-success">Add to Cart</button>
+    </div>
+
+</div>
+
+<hr>
+
+<h4>Related Books</h4>
+<div class="row">
+    {% for b in related_books %}
+    <div class="col-md-3">
+        <a href="{% url 'book_detail' b.id %}">
+            {{ b.title }}
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% if user.is_authenticated %}
+  <a href="{% url 'add_to_wishlist' book.id %}" class="btn btn-outline-danger">
+    ❤️ Add to Wishlist
+  </a>
+{% else %}
+  <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline-danger">
+    ❤️ Add to Wishlist
+  </a>
+{% endif %}
+
+{% endblock %}

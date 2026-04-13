@@ -1,0 +1,25 @@
+{% extends 'books/layout.html' %}
+
+{% block content %}
+
+<h2>Search Books</h2>
+
+<form method="GET" class="mb-3">
+    <input type="text" name="q" placeholder="Title">
+    <input type="text" name="author" placeholder="Author">
+    <input type="number" name="min_price" placeholder="Min Price">
+    <input type="number" name="max_price" placeholder="Max Price">
+    <button class="btn btn-primary">Search</button>
+</form>
+
+<div class="row">
+    {% for book in books %}
+    <div class="col-md-3">
+        <div class="card p-2">
+            <p>{{ book.title }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

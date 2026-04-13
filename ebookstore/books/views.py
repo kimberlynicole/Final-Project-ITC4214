@@ -1,5 +1,6 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Book, Category
+from django.shortcuts import render, get_object_or_404, redirect
+
+from .models import Book, Category, Wishlist
 
 # Create your views here.
 
@@ -44,3 +45,38 @@ def search(request):
         books = books.filter(price__range=[min_price, max_price])
 
     return render(request, 'books/search.html', {'books': books})
+
+#Wishlist
+def wishlist_view(request):
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+
+    wishlist_items = Wishlist.objects.filter(user=request.user)
+
+    return render(request, 'books/wishlist.html', {
+        'wishlist_items': wishlist_items
+    })
+
+def add_to_wishlist(request, book_id):
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+
+    book = Book.objects.get(id=book_id)
+
+    Wishlist.objects.get_or_create(
+        user=request.user,
+        book=book
+    )
+
+    return redirect('book_detail', id=book_id)
+
+def remove_from_wishlist(request, book_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    Wishlist.objects.filter(
+        user=request.user,
+        book_id=book_id
+    ).delete()
+
+    return redirect('wishlist')
