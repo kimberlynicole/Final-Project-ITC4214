@@ -1,0 +1,54 @@
+{% extends 'books/layout.html' %}
+
+{% block body %}
+
+<h2>🔥 Best Selling Books</h2>
+
+<div class="row">
+  {% for book in highlights %}
+    <div class="col-md-3">
+      <div class="card mb-3">
+
+        {% if book.cover %}
+          <img src="{{ book.cover.url }}" class="card-img-top">
+        {% endif %}
+
+        <div class="card-body">
+          <h5>{{ book.title }}</h5>
+          <p>{{ book.author }}</p>
+          <p class="text-success fw-bold">€{{ book.price }}</p>
+
+          <a href="{% url 'books:book_detail' book.id %}" class="btn btn-primary">
+            View
+          </a>
+        </div>
+
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<h3>All Books</h3>
+
+<div class="row">
+  {% for book in books %}
+    <div class="col-md-3">
+      <div class="card mb-3">
+
+        {% if book.cover %}
+          <img src="{{ book.cover.url }}" class="card-img-top">
+        {% endif %}
+
+        <div class="card-body">
+          <h5>{{ book.title }}</h5>
+          <p>{{ book.author }}</p>
+        </div>
+
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-danger">No books found in database.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,14 @@
+/* Custom Navbar Color */
+.custom-navbar {
+    background-color: #2C3E50; /* deep blue */
+}
+
+/* Navbar links styling */
+.navbar-nav .nav-link {
+    font-weight: 600;   /* semi-bold */
+}
+
+/* Space between nav-links*/
+.navbar-nav .left-nav-links {
+    margin-right: 15px;
+}

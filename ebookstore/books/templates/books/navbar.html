@@ -1,9 +1,13 @@
+{% load static %}
 <!-- MAIN NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
   <div class="container">
 
-    <!-- BRAND -->
-    <a class="navbar-brand" href="/books/">📚 E-Book Store</a>
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'books:books' %}">
+        <img src="{% static 'images/logo.png' %}" alt="Logo" height="40" class="me-2">
+        <span class="fw-bold">NextRead</span>
+    </a>
 
     <!-- TOGGLER -->
     <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
@@ -11,11 +15,11 @@
     </button>
 
     <!-- LEFT SIDE NAV -->
-    <ul class="navbar-nav me-auto d-none d-lg-flex align-items-center ml-3">
+    <ul class="navbar-nav me-auto ms-5 d-none d-lg-flex align-items-center ml-3 left-nav-links">
 
       <!-- HOME -->
       <li class="nav-item">
-        <a class="nav-link text-white" href="/">Home</a>
+        <a class="nav-link text-white" href="{% url 'books:index' %}">Home</a>
       </li>
 
       <!-- BOOKS DROPDOWN -->
@@ -42,54 +46,57 @@
 
     </ul>
 
-    <!-- CENTER SEARCH -->
-    <form class="d-none d-lg-flex mx-auto" method="GET" action="/books/search/">
-      <input class="form-control me-2" type="search" name="q" placeholder="Search books...">
-      <button class="btn btn-light">Search</button>
-    </form>
 
     <!-- RIGHT SIDE NAV -->
     <ul class="navbar-nav ms-auto d-none d-lg-flex align-items-center">
+        <!-- SEARCH BAR-->
+        <form class="d-flex ms-3" method="GET" action="/books/search/">
+            <input class="form-control me-2" type="search" name="q" placeholder="Search..." style="width: 160px;">
+            
+            <button class="btn btn-light">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
 
-      <!-- CART -->
-      <li class="nav-item">
-        <a class="nav-link text-white" href="{% url 'cart:cart_detail' %}">
-            <i class="bi bi-cart3 fs-5"></i>
+        <!-- CART -->
+        <li class="nav-item">
+            <a class="nav-link text-white" href="{% url 'cart:cart_detail' %}">
+                <i class="bi bi-cart3 fs-4"></i>
 
-        </a>
-      </li>
+            </a>
+        </li>
 
-      <!-- ACCOUNT -->
-      <li class="nav-item dropdown">
+        <!-- ACCOUNT -->
+        <li class="nav-item dropdown">
 
-        {% if user.is_authenticated %}
-          <a class="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown">
-            <i class="bi bi-person-circle fs-5"></i>
-            {{ user.username }}
-          </a>
+            {% if user.is_authenticated %}
+            <a class="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown">
+                <i class="bi bi-person-circle fs-4"></i>
+                {{ user.username }}
+            </a>
 
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Profile</a></li>
-            <li><a class="dropdown-item" href="{% url 'library:library' %}">My Library</a></li>
-            <li><a class="dropdown-item" href="{% url 'books:wishlist' %}">Wishlist</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
-          </ul>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'library:library' %}">My Library</a></li>
+                <li><a class="dropdown-item" href="{% url 'books:wishlist' %}">Wishlist</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
+            </ul>
 
-        {% else %}
-          <a class="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown">
-            👤 Account
-          </a>
+            {% else %}
+            <a class="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown">
+                👤 Account
+            </a>
 
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="{% url 'accounts:login' %}">Login</a></li>
-            <li><a class="dropdown-item" href="{% url 'accounts:register' %}">Register</a></li>
-          </ul>
-        {% endif %}
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url 'accounts:login' %}">Login</a></li>
+                <li><a class="dropdown-item" href="{% url 'accounts:register' %}">Register</a></li>
+            </ul>
+            {% endif %}
 
-      </li>
+        </li>
 
-    </ul>
+        </ul>
 
   </div>
 </nav>
@@ -98,7 +105,8 @@
 <div class="offcanvas offcanvas-end bg-primary text-white" tabindex="-1" id="offcanvasNavbar">
 
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title">📚 E-Book Store</h5>
+    <img src="{% static 'images/logo.png' %}" alt="Logo" height="40" class="me-2">
+    <span class="fw-bold">NextRead</span>
     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
   </div>
 
