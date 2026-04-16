@@ -1,48 +1,235 @@
 {% extends 'books/layout.html' %}
-
 {% block body %}
 
-<div class="row">
+<div class="container py-4 mt-5">
 
+  <div class="row g-5">
+
+    <!-- ================= LEFT SIDE ================= -->
     <div class="col-md-4">
-        <img src="{{ book.cover.url }}" class="img-fluid">
+
+      <div class="text-center">
+        <img src="{{ book.cover.url }}"
+            class="img-fluid rounded shadow"
+            style="max-height: 500px; object-fit: cover;">
+      </div>
+
     </div>
 
-    <div class="col-md-8">
-        <h2>{{ book.title }}</h2>
-        <p><strong>Author:</strong> {{ book.author }}</p>
-        <p><strong>Price:</strong> ${{ book.price }}</p>
+    <!-- ================= RIGHT SIDE ================= -->
+    <div class="col-md-8 text-center text-md-start">
 
-        <hr>
+      <!-- TITLE -->
+      <h2 class="fw-bold mt-4">{{ book.title }}</h2>
 
-        <h4>Description</h4>
-        <p>{{ book.description }}</p>
+      <!-- ⭐ RATING -->
+      <div class="my-3">
+        {% include 'books/star_display.html' with rating=book.average_rating show_avg=True %}
+      </div>
 
-        <button class="btn btn-success">Add to Cart</button>
+
+      <!-- DETAILS -->
+      <ul class="list-group list-group-flush my-3">
+
+        <li class="list-group-item mb-3">
+          <strong>Author:</strong> {{ book.author }}
+        </li>
+
+        <li class="list-group-item mb-3">
+          <strong>Language:</strong> {{ book.language }}
+        </li>
+
+        <li class="list-group-item mb-3">
+          <strong>Genre:</strong> {{ book.category.name }}
+        </li>
+
+        <li class="list-group-item mb-3">
+          <strong>Length:</strong> {{ book.pages }} pages
+        </li>
+
+        <li class="list-group-item mb-3">
+          <strong>Published:</strong> {{ book.published_date }}
+        </li>
+
+      </ul>
+
+      <!-- PRICE + BUTTONS  -->
+      <div class="mt-2 p-3 bg-light rounded d-flex justify-content-between align-items-center">
+
+        <h4 class="text-success mb-0">€{{ book.price }}</h4>
+
+        <div>
+
+          <button class="btn btn-success">
+            Add to Cart
+          </button>
+
+          {% if user.is_authenticated %}
+            <a href="{% url 'books:add_to_wishlist' book.id %}"
+              class="btn btn-outline-danger ms-2">
+              Wishlist
+            </a>
+          {% else %}
+            <a href="{% url 'accounts:login' %}?next={{ request.path }}"
+              class="btn btn-outline-danger ms-2">
+              Wishlist
+            </a>
+          {% endif %}
+
+        </div>
+
+      </div>
+
     </div>
+
+  </div>
 
 </div>
 
-<hr>
 
-<h4>Related Books</h4>
-<div class="row">
-    {% for b in related_books %}
-    <div class="col-md-3">
-        <a href="{% url 'book_detail' b.id %}">
-            {{ b.title }}
-        </a>
+<!-- ================= DESCRIPTION ================= -->
+<section class="blue-bg py-5 mt-5">
+
+  <div class="container my-5">
+
+    <h2 class="fw-bold mb-3">Description</h2>
+
+    <p class="text-muted lh-lg mb-0">
+      {{ book.description }}
+    </p>
+
+  </div>
+
+</section>
+
+ 
+<!--================================== Review Section================================---->
+<div class="container my-5">
+
+  <!-- ================= HEADER ================= -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h3 class="fw-bold mb-0">Customer Reviews</h3>
+
+    <span class="text-muted">
+      {{ reviews|length }} reviews
+    </span>
+
+  </div>
+
+
+  <!-- ================= REVIEWS ================= -->
+  {% for r in reviews %}
+
+    <div class="card mb-3 shadow-sm border-0">
+
+      <div class="card-body">
+
+        <!-- USER + DATE -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+
+          <strong class="text-dark">
+            <i class="bi bi-person-circle fs-4 me-1"></i>
+            {{ r.user.username }}
+          </strong>
+
+          <small class="text-muted">
+            {{ r.created_at|date:"M d, Y" }}
+          </small>
+
+        </div>
+
+        <!-- STARS -->
+        <div class="mb-2">
+          {% include 'books/star_display.html' with rating=r.stars show_avg=False %}
+        </div>
+
+        <!-- COMMENT -->
+        <p class="mb-0 text-secondary" style="line-height:1.5;">
+          {{ r.comment }}
+        </p>
+
+      </div>
+
     </div>
-    {% endfor %}
+
+  {% empty %}
+    <div class="text-center py-4 text-muted">
+      No reviews yet — be the first to review this book.
+    </div>
+  {% endfor %}
+
+
+  <!-- ================= REVIEW FORM ================= -->
+  {% if user.is_authenticated %}
+
+  <div class="card mt-5 shadow border-0">
+
+    <div class="card-body">
+
+      <h4 class="mb-3 fw-bold">Write a Review</h4>
+
+      <form method="POST" action="{% url 'books:add_review' book.id %}">
+        {% csrf_token %}
+
+        <!-- ⭐ STAR RATING -->
+        <div class="mb-3">
+
+          <label class="form-label fw-bold">Your Rating</label>
+
+          <div id="star-rating" class="mb-2">
+            {% for i in "12345" %}
+              <i class="bi bi-star fs-4 text-warning star"
+                data-value="{{ forloop.counter }}"></i>
+            {% endfor %}
+          </div>
+
+          <input type="hidden" name="stars" id="rating-value">
+
+        </div>
+
+        <!-- COMMENT -->
+        <div class="mb-3">
+          {{ form.comment }}
+        </div>
+
+        <!-- BUTTON -->
+        <button type="submit" class="btn btn-primary w-100">
+          Submit Review
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  {% else %}
+    <div class="alert alert-light mt-4 text-center">
+      Login to write a review
+    </div>
+  {% endif %}
+
 </div>
-{% if user.is_authenticated %}
-  <a href="{% url 'add_to_wishlist' book.id %}" class="btn btn-outline-danger">
-    ❤️ Add to Wishlist
-  </a>
-{% else %}
-  <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline-danger">
-    ❤️ Add to Wishlist
-  </a>
-{% endif %}
+
+<!-- ================= SIMILAR BOOKS ================= -->
+<section class="blue-bg py-5 mt-5"> 
+  <div class="container my-5">
+
+    <h3 class="fw-bold mb-4"> Similar Books</h3>
+
+      <div class="d-flex overflow-auto">
+
+        {% for book in similar_books %}
+          {% include 'books/book_card.html' %}
+        {% empty %}
+          <p class="text-muted">No similar books found.</p>
+        {% endfor %}
+
+      </div>
+  </div>
+
+</section>
+
 
 {% endblock %}

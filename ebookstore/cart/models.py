@@ -6,7 +6,7 @@ from books.models import Book
 
 # CART (1 per user)
 class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='cart')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -16,9 +16,7 @@ class Cart(models.Model):
 # CART ITEMS (books inside cart)
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-
+    book = models.ForeignKey(Book, on_delete=models.CASCADE,related_name='cart_items')
     added_at = models.DateTimeField(auto_now_add=True)
 
     def total_price(self):
@@ -26,3 +24,6 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.book.title} x {self.quantity}"
+    
+    class Meta:
+        unique_together = ('cart', 'book')

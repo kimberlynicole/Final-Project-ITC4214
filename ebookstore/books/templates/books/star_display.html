@@ -1,0 +1,13 @@
+{% for i in "12345" %}
+  {% if forloop.counter <= rating %}
+    <i class="bi bi-star-fill text-warning"></i>
+  {% else %}
+    <i class="bi bi-star text-muted"></i>
+  {% endif %}
+{% endfor %}
+
+{% if show_avg %}
+  <small class="text-muted ms-1">
+    ({{ rating|floatformat:1 }})
+  </small>
+{% endif %}
