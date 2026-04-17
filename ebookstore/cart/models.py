@@ -19,11 +19,8 @@ class CartItem(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE,related_name='cart_items')
     added_at = models.DateTimeField(auto_now_add=True)
 
-    def total_price(self):
-        return self.quantity * self.book.price
-
-    def __str__(self):
-        return f"{self.book.title} x {self.quantity}"
-    
     class Meta:
         unique_together = ('cart', 'book')
+    
+    def __str__(self):
+        return f"{self.book.title}"

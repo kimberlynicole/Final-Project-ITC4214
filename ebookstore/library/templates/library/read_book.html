@@ -1,0 +1,70 @@
+{% extends 'books/layout.html' %}
+{% block body %}
+
+<div id="reader" class="reader reader-light">
+
+    <div class="container py-4">
+
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">{{ book.title }}</h4>
+
+            <a href="{% url 'library:my_library' %}" class="btn btn-outline-secondary btn-sm">
+                ← Back
+            </a>
+        </div>
+
+        <!-- CENTER WRAPPER (PDF + CONTROLS SAME WIDTH) -->
+        <div class="d-flex justify-content-center">
+
+            <div class="reader-box">
+
+                <!-- PDF -->
+                <div class="pdf-wrapper text-center mb-3">
+                    <canvas id="pdfCanvas"></canvas>
+                </div>
+
+                <!-- CONTROLS -->
+                <div class="reader-toolbar p-2">
+
+                    <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+
+                        {% if page > 1 %}
+                        <a href="?page={{ page|add:'-1' }}" class="btn btn-primary btn-sm">
+                            Prev
+                        </a>
+                        {% endif %}
+
+                        <div class="fw-semibold px-2">
+                            {{ page }} / {{ total_pages }}
+                        </div>
+
+                        {% if page < total_pages %}
+                        <a href="?page={{ page|add:'1' }}" class="btn btn-primary btn-sm">
+                            Next
+                        </a>
+                        {% endif %}
+
+                        <button id="darkToggle" class="btn btn-secondary btn-sm">
+                            🌙
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- DATA -->
+    <div id="pdfData"
+         data-url="{{ book.pdf_file.url }}"
+         data-page="{{ page }}">
+    </div>
+
+</div>
+
+{% endblock %}

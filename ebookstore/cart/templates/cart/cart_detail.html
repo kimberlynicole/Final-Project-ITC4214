@@ -1,0 +1,65 @@
+{% extends 'books/layout.html' %}
+{% block body %}
+
+<div class="container py-5">
+
+  <h2 class="fw-bold mb-4">Your Cart</h2>
+
+  {% if user.is_authenticated %}
+
+    {% if items %}
+
+      <div class="list-group shadow-sm">
+
+        {% for item in items %}
+          {% include 'cart/cart_item.html' %}
+        {% endfor %}
+
+      </div>
+
+      {% include 'cart/cart_total.html' %}
+
+    {% else %}
+
+      {% include 'cart/empty_cart.html' %}
+
+    {% endif %}
+
+  {% else %}
+
+    {% if session_cart %}
+
+      <div class="list-group shadow-sm">
+
+        {% for key, item in session_cart.items %}
+
+          <div class="list-group-item d-flex justify-content-between">
+
+            <div>
+              <h6>{{ item.title }}</h6>
+              <small class="text-muted">Digital Book</small>
+            </div>
+
+            <div class="fw-bold text-success">
+              €{{ item.price }}
+            </div>
+
+          </div>
+
+        {% endfor %}
+
+      </div>
+
+      {% include 'cart/cart_total.html' %}
+
+    {% else %}
+
+      {% include 'cart/empty_cart.html' %}
+
+    {% endif %}
+
+  {% endif %}
+
+</div>
+
+{% endblock %}

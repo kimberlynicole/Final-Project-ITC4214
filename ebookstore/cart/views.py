@@ -1,80 +1,68 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, redirect, get_object_or_404
 from books.models import Book
 from .models import Cart, CartItem
+from .forms import PaymentForm
+from library.models import Library
+import time
 
 # Create your views here.
 def add_to_cart(request, id):
     book = Book.objects.get(id=id)
 
-    # 👤 LOGGED-IN USER → DATABASE CART
     if request.user.is_authenticated:
 
         cart, created = Cart.objects.get_or_create(user=request.user)
 
-        item, created = CartItem.objects.get_or_create(
+        CartItem.objects.get_or_create(
             cart=cart,
             book=book
         )
 
-        if not created:
-            item.quantity += 1
-            item.save()
-
-    # 👤 GUEST USER → SESSION CART
     else:
         cart = request.session.get('cart', {})
 
-        if str(id) in cart:
-            cart[str(id)]['quantity'] += 1
-        else:
+        if str(id) not in cart:
             cart[str(id)] = {
                 'title': book.title,
-                'price': str(book.price),
-                'quantity': 1
+                'price': str(book.price)
             }
 
         request.session['cart'] = cart
 
-    return redirect('cart_detail')
+    return redirect('cart:cart_detail')
+
+
 
 def cart_detail(request):
 
-    # 👤 LOGGED-IN USER
     if request.user.is_authenticated:
 
         cart, created = Cart.objects.get_or_create(user=request.user)
         items = cart.items.all()
 
-        total = sum(item.quantity * item.book.price for item in items)
+        total = sum(item.book.price for item in items)
 
         return render(request, 'cart/cart_detail.html', {
             'items': items,
             'total': total
         })
 
-    # 👤 GUEST USER
     else:
-        session_cart = request.session.get('cart', {})
-
-        total = 0
-        for item in session_cart.values():
-            total += float(item['price']) * item['quantity']
-
         return render(request, 'cart/cart_detail.html', {
-            'session_cart': session_cart,
-            'total': total
+            'items': [],
+            'total': 0
         })
     
 
 def remove_from_cart(request, id):
 
-    # 👤 LOGGED-IN USER
+    # LOGGED-IN USER
     if request.user.is_authenticated:
 
         cart = Cart.objects.get(user=request.user)
         CartItem.objects.filter(cart=cart, book_id=id).delete()
 
-    # 👤 GUEST USER
+    # GUEST USER
     else:
         cart = request.session.get('cart', {})
 
@@ -83,7 +71,7 @@ def remove_from_cart(request, id):
 
         request.session['cart'] = cart
 
-    return redirect('cart_detail')
+    return redirect('cart:cart_detail')
 
 def clear_cart(request):
 
@@ -95,4 +83,76 @@ def clear_cart(request):
     else:
         request.session['cart'] = {}
 
-    return redirect('cart_detail')
+    return redirect('cart:cart_detail')
+
+
+
+def checkout(request):
+    # FORCE LOGIN BEFORE ANYTHING
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+    cart = Cart.objects.get(user=request.user)
+    items = cart.items.all()
+    total = sum(item.book.price for item in items)
+
+    form = PaymentForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if form.is_valid():
+            return redirect('cart:success')
+
+    return render(request, 'cart/checkout.html', {
+        'form': form,
+        'items': items,
+        'total': total
+    })
+
+
+
+
+def payment_simulation(request):
+
+    # BLOCK GUEST USERS
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+
+    cart = get_object_or_404(Cart, user=request.user)
+
+    if request.method == "POST":
+
+        form = PaymentForm(request.POST)
+
+        if form.is_valid():
+
+            # MOVE BOOKS TO LIBRARY
+            for item in cart.items.all():
+                Library.objects.get_or_create(
+                    user=request.user,
+                    book=item.book
+                )
+
+            # CLEAR CART
+            cart.items.all().delete()
+
+            return redirect('cart:success')
+
+        else:
+            return render(request, 'cart/checkout.html', {
+                'form': form,
+                'items': cart.items.all(),
+                'total': sum(item.book.price for item in cart.items.all())
+            })
+
+    # GET request
+    form = PaymentForm()
+
+    return render(request, 'cart/checkout.html', {
+        'form': form,
+        'items': cart.items.all(),
+        'total': sum(item.book.price for item in cart.items.all())
+    })
+
+
+def payment_success(request):
+    return render(request, 'cart/success.html')

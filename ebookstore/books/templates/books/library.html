@@ -2,7 +2,7 @@
 
 {% block body %}
 
-<h2>My Library 📚</h2>
+<h2>My Library</h2>
 
 <div class="row">
   {% for item in books %}
@@ -14,7 +14,7 @@
       <h5>{{ item.book.title }}</h5>
       <p>{{ item.book.author }}</p>
 
-      <a href="{% url 'book_detail' item.book.id %}" class="btn btn-primary btn-sm">
+      <a href="{% url 'books:book_detail' item.book.id %}" class="btn btn-primary btn-sm">
         View Book
       </a>
 
