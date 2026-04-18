@@ -2,24 +2,126 @@
 
 {% block body %}
 
-<h2>Search Books</h2>
+<div class="container mt-4">
 
-<form method="GET" class="mb-3">
-    <input type="text" name="q" placeholder="Title">
-    <input type="text" name="author" placeholder="Author">
-    <input type="number" name="min_price" placeholder="Min Price">
-    <input type="number" name="max_price" placeholder="Max Price">
-    <button class="btn btn-primary">Search</button>
-</form>
+  <!-- SEARCH HEADER -->
+  <div class="mb-4">
+    <h3 class="fw-bold">Discover Books</h3>
 
-<div class="row">
-    {% for book in books %}
-    <div class="col-md-3">
-        <div class="card p-2">
-            <p>{{ book.title }}</p>
+    <form method="GET" class="d-flex mt-3">
+
+      <input 
+        type="text" 
+        name="q" 
+        class="form-control me-2"
+        placeholder="Search by title or author..."
+        value="{{ request.GET.q }}"
+      >
+
+      <button class="btn btn-dark px-4">
+        Search
+      </button>
+
+    </form>
+  </div>
+
+  <div class="row">
+
+    <!-- 🎯 SIDEBAR FILTERS -->
+    <div class="col-lg-3 mb-4">
+
+        <div class="filter-sidebar p-4">
+
+            <h5 class="fw-bold mb-3">
+            Filter Books
+            </h5>
+
+            <hr>
+
+            <form method="GET">
+
+            <!-- keep search -->
+            <input type="hidden" name="q" value="{{ request.GET.q }}">
+
+            <!-- CATEGORY -->
+            <div class="mb-4">
+                <label class="fw-semibold mb-2">Category</label>
+                <select name="category" class="form-select">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.id }}"
+                    {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>
+                    {{ cat.name }}
+                    </option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <!-- PRICE -->
+            <div class="mb-4">
+                <label class="fw-semibold mb-2">Price (€)</label>
+
+                <div class="d-flex gap-2">
+                <input type="number" name="min_price" class="form-control" placeholder="Min" value="{{ request.GET.min_price }}">
+                <input type="number" name="max_price" class="form-control" placeholder="Max" value="{{ request.GET.max_price }}">
+                </div>
+            </div>
+
+            <!-- BUTTONS -->
+            <button class="btn btn-primary w-100 mb-2">
+                Apply Filters
+            </button>
+
+            <a href="/books/search/" class="btn btn-outline-secondary w-100">
+                Reset
+            </a>
+
+            </form>
+
         </div>
+
     </div>
-    {% endfor %}
+
+    <!--  RESULTS -->
+    <div class="col-lg-9">
+
+      <!-- RESULT INFO -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">
+          {% if request.GET.q %}
+            Results for "{{ request.GET.q }}"
+          {% else %}
+            All Books
+          {% endif %}
+        </h5>
+
+        <span class="text-muted">
+          {{ books|length }} found
+        </span>
+      </div>
+
+      <!-- BOOK GRID -->
+      <div class="row g-3">
+
+            {% for book in books %}
+            <div class="col-md-4 col-sm-6">
+                {% include 'books/book_card.html' with book=book %}
+            </div>
+
+            {% empty %}
+            <div class="text-center mt-5">
+                 <i class="bi bi-book fs-1 text-muted mb-3"></i>
+                <h5>No books found</h5>
+                <p class="text-muted">Try adjusting your search or filters</p>
+            </div>
+            {% endfor %}
+
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
 
 {% endblock %}

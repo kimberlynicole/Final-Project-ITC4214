@@ -1,35 +1,58 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Library
 from books.models import Book
-from django.http import JsonResponse
-import json
-
 
 # =========================
 # MY LIBRARY
 # =========================
 def my_library(request):
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+    books = Library.objects.filter(user=request.user)
+    return render(request, 'library/my_library.html', {
+        'books': books
+    })
+
+def add_to_library(request, book_id):
 
     if not request.user.is_authenticated:
         return redirect('accounts:login')
 
-    books = Library.objects.filter(user=request.user)
+    book = get_object_or_404(Book, id=book_id)
+    # CHECK FIRST
+    exists = Library.objects.filter(user=request.user, book=book).exists()
+    if exists:
+        return redirect('library:my_library')  # already owned
 
-    return render(request, 'library/my_library.html', {
-        'books': books
-    })
+    # CREATE ONLY IF NOT EXISTS
+    Library.objects.create(user=request.user, book=book)
+
+    return redirect('library:my_library')
+
+
+
+def remove_from_library(request, book_id):
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+
+    Library.objects.filter(
+        user=request.user,
+        book_id=book_id
+    ).delete()
+
+    return redirect('library:my_library')
+
+
+
 
 
 def read_book(request, book_id):
 
     if not request.user.is_authenticated:
         return redirect('accounts:login')
-
     lib = Library.objects.get(user=request.user, book_id=book_id)
     book = get_object_or_404(Book, id=book_id)
-
     total_pages = book.pages if book.pages > 0 else 1
-
     page = int(request.GET.get("page", lib.last_page or 1))
 
     if page < 1:
@@ -52,26 +75,3 @@ def read_book(request, book_id):
 
 
 
-def update_progress(request, book_id):
-
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "not logged in"}, status=403)
-
-    if request.method != "POST":
-        return JsonResponse({"error": "invalid method"}, status=400)
-
-    data = json.loads(request.body)
-    page = data.get("page", 1)
-    total = data.get("total", 1)
-
-    lib = get_object_or_404(Library, user=request.user, book_id=book_id)
-    # 👇 DEBUG LINES GO HERE
-    print("PAGE:", page)
-    print("TOTAL:", total)
-    
-    lib.last_page = page
-    lib.progress = int((page / total) * 100)
-    print("PROGRESS:", lib.progress)
-    lib.save()
-
-    return JsonResponse({"success": True, "progress": lib.progress})

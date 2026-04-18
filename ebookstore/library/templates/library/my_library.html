@@ -6,11 +6,6 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <h2 class="fw-bold mb-0">My Library</h2>
-
-        <a href="{% url 'books:books' %}" class="btn btn-primary">
-            Continue Shopping
-        </a>
-
     </div>
 
     {% if books %}
@@ -19,14 +14,12 @@
 
             {% for item in books %}
 
-                <div class="col-md-3">
+                <div class="col-lg-2 col-md-3 col-6">
 
                     <div class="card border-0 shadow-sm h-100">
 
-                        <!-- BOOK COVER ONLY (NO PRICE COMPONENT) -->
-                        <img src="{{ item.book.cover.url }}"
-                             class="card-img-top"
-                             style="height: 250px; object-fit: cover;">
+                        <!--BOOK DISPLAY -->
+                        <img src="{{ item.book.cover.url }}" class="card-img-top img-fluid book-cover">
 
                         <div class="card-body">
 
@@ -43,7 +36,7 @@
 
                             <div class="progress mb-3">
 
-                                <div class="progress-bar bg-success"
+                                <div class="progress-bar bg-primary"
                                      style="width: {{ item.progress|default:0 }}%;">
                                 </div>
 
@@ -51,7 +44,7 @@
 
                             <!-- BUTTON -->
                             <a href="{% url 'library:read_book' item.book.id %}"
-                               class="btn btn-success w-100">
+                               class="btn btn-outline-primary w-100">
 
                                 {% if item.progress >= 100 %}
                                     Read Again
@@ -62,6 +55,11 @@
                                 {% endif %}
 
                             </a>
+
+                            <button class="btn btn-outline-danger w-100 mt-2 remove-book-btn"
+                                    data-book-id="{{ item.book.id }}">
+                                Remove
+                            </button>
 
                         </div>
 
@@ -90,5 +88,6 @@
     {% endif %}
 
 </div>
+{% include 'library/delete_modal.html' %}
 
 {% endblock %}

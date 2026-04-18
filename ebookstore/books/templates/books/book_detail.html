@@ -22,7 +22,7 @@
       <!-- TITLE -->
       <h2 class="fw-bold mt-4">{{ book.title }}</h2>
 
-      <!-- ⭐ RATING -->
+      <!-- RATING -->
       <div class="my-3">
         {% include 'books/star_display.html' with rating=book.average_rating show_avg=True %}
       </div>
@@ -56,29 +56,66 @@
       <!-- PRICE + BUTTONS  -->
       <div class="mt-2 p-3 bg-light rounded d-flex justify-content-between align-items-center">
 
-        <h4 class="text-success mb-0">€{{ book.price }}</h4>
+        <!-- PRICE (muted if owned) -->
+        <h4 class="{% if item_exists %}text-muted{% else %}text-primary{% endif %} mb-0">
+          €{{ book.price }}
+        </h4>
 
-        <div>
-          <form method="POST" action="{% url 'cart:add_to_cart' book.id %}">
-            {% csrf_token %}
-            <button class="btn btn-success">
-              Add to Cart
-            </button>
-          </form>
+        <div class="d-flex align-items-center">
 
-          {% if user.is_authenticated %}
-            <a href="{% url 'books:add_to_wishlist' book.id %}"
-              class="btn btn-outline-danger ms-2">
-              Wishlist
+          {% if user.is_authenticated and item_exists %}
+
+            <!-- OWNED BADGE -->
+            <span class="badge bg-danger me-2">
+              Owned
+            </span>
+
+            <!-- READ NOW -->
+            <a href="{% url 'library:read_book' book.id %}"
+              class="btn btn-success">
+              Read Now
             </a>
+
           {% else %}
-            <a href="{% url 'accounts:login' %}?next={{ request.path }}"
-              class="btn btn-outline-danger ms-2">
-              Wishlist
-            </a>
+
+            <!-- ADD TO CART -->
+            <form method="POST" action="{% url 'cart:add_to_cart' book.id %}" class="d-inline">
+              {% csrf_token %}
+              <button class="btn btn-primary">
+                Add to Cart
+              </button>
+            </form>
+
+          {% endif %}
+
+          <!-- WISHLIST (always visible) -->
+          {% if user.is_authenticated %}
+
+          <button type="button"
+                  class="wishlist-btn mx-3"
+                  data-book-id="{{ book.id }}">
+
+            {% if is_wishlisted %}
+              <i class="bi bi-heart-fill text-danger fs-3"></i>
+            {% else %}
+              <i class="bi bi-heart text-danger fs-3"></i>
+            {% endif %}
+
+          </button>
+
+          {% else %}
+
+          <a href="{% url 'accounts:login' %}?next={{ request.path }}"
+            class="wishlist-btn">
+
+            <i class="bi bi-heart text-danger fs-3"></i>
+
+          </a>
+
           {% endif %}
 
         </div>
+        
 
       </div>
 
@@ -174,7 +211,7 @@
       <form method="POST" action="{% url 'books:add_review' book.id %}">
         {% csrf_token %}
 
-        <!-- ⭐ STAR RATING -->
+        <!-- STAR RATING -->
         <div class="mb-3">
 
           <label class="form-label fw-bold">Your Rating</label>

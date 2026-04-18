@@ -12,3 +12,20 @@
 .navbar-nav .left-nav-links {
     margin-right: 15px;
 }
+
+
+.custom-offcanvas {
+    background-color: #2C3E50; /* SAME AS NAVBAR */
+}
+
+.custom-offcanvas .nav-link {
+    font-weight: 600;
+    padding: 10px 0;
+    
+}
+
+
+
+.custom-offcanvas hr {
+    border-color: rgba(255,255,255,0.2);
+}

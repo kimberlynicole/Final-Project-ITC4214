@@ -2,6 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Book, Category, Wishlist, Rating
 from django.db.models import Sum, Avg
 from .forms import RatingForm
+from library.models import Library
+from django.http import JsonResponse
+from django.db.models import Q
+
 
 # ============================================================
 # HOME PAGE (SECTIONS)
@@ -62,19 +66,34 @@ def book_detail(request, id):
     book = get_object_or_404(Book, id=id)
     related_books = Book.objects.filter(category=book.category).exclude(id=id)[:4]
     reviews = book.ratings.select_related('user').order_by('-created_at')
-    # 🔁 SIMILAR BOOKS (same category)
-    similar_books = Book.objects.filter(
-        category=book.category
-    ).exclude(id=book.id)[:6]
+    similar_books = Book.objects.filter(category=book.category).exclude(id=book.id)[:6]
 
     form = RatingForm()
+
+    item_exists = False
+
+    if request.user.is_authenticated:
+        item_exists = Library.objects.filter(
+            user=request.user,
+            book=book
+        ).exists()
+
+    
+    is_wishlisted = False
+    if request.user.is_authenticated:
+        is_wishlisted = Wishlist.objects.filter(
+            user=request.user,
+            book=book
+        ).exists()
 
     return render(request, 'books/book_detail.html', {
         'book': book,
         'related_books': related_books,
         'reviews': reviews,
         'form': form,
-        'similar_books': similar_books
+        'similar_books': similar_books,
+        'item_exists': item_exists,
+        'is_wishlisted': is_wishlisted,
     })
 
 # ========================================================================
@@ -125,32 +144,45 @@ def add_review(request, book_id):
 
 
 # ============================================================
-# SEARCH
+#                           SEARCH
 # ============================================================
 
-def search(request):
 
+
+def search(request):
     query = request.GET.get('q')
-    author = request.GET.get('author')
+    category = request.GET.get('category')
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
 
     books = Book.objects.all()
 
+    # Search by title OR author
     if query:
-        books = books.filter(title__icontains=query)
+        books = books.filter(
+            Q(title__icontains=query) |
+            Q(author__icontains=query)
+        )
 
-    if author:
-        books = books.filter(author__icontains=author)
+    # Filter by category
+    if category:
+        books = books.filter(category_id=category)
 
-    if min_price and max_price:
-        books = books.filter(price__range=[min_price, max_price])
+    #  Filter by price range
+    if min_price:
+        books = books.filter(price__gte=min_price)
 
-    return render(request, 'books/search.html', {'books': books})
+    if max_price:
+        books = books.filter(price__lte=max_price)
+
+    return render(request, 'books/search.html', {
+        'books': books,
+        'categories': Category.objects.all()
+    })
 
 
 # ============================================================
-# WISHLIST
+#                               WISHLIST
 # ============================================================
 
 def wishlist_view(request):
@@ -193,4 +225,26 @@ def remove_from_wishlist(request, book_id):
 
     return redirect('books:wishlist')
 
+
+
+
+
+def toggle_wishlist(request, book_id):
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "not logged in"}, status=403)
+
+    book = Book.objects.get(id=book_id)
+
+    obj, created = Wishlist.objects.get_or_create(
+        user=request.user,
+        book=book
+    )
+
+    # if already existed → remove it
+    if not created:
+        obj.delete()
+        return JsonResponse({"status": "removed"})
+
+    return JsonResponse({"status": "added"})
 
