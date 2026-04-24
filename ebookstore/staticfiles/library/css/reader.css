@@ -1,0 +1,50 @@
+
+/* =========================
+   THEME
+========================= */
+.reader-light {
+    background: #ffffff;
+    color: #111;
+}
+
+.reader-dark {
+    background: #121212;
+    color: #e5e5e5;
+}
+
+/* =========================
+   CENTERED READER WIDTH
+========================= */
+.reader-box {
+    width: 100%;
+    max-width: 900px;
+}
+
+/* =========================
+   PDF CENTERING
+========================= */
+.pdf-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+#pdfCanvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* =========================
+   CONTROLS (MATCH PDF WIDTH)
+========================= */
+.reader-toolbar {
+    background: #f1f3f5;
+    border-radius: 10px;
+}
+
+.reader-dark .reader-toolbar {
+    background: #acabab;
+    color: #fff;
+}
+
+

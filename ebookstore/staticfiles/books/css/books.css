@@ -1,0 +1,146 @@
+/* ===================================
+            NARVBAR
+======================================*/
+/* Custom Navbar Color */
+.custom-navbar {
+    background-color: #2C3E50; /* deep blue */
+}
+
+/* Navbar links styling */
+.navbar-nav .nav-link {
+    font-weight: 600;   /* semi-bold */
+}
+
+/* Space between nav-links*/
+.navbar-nav .left-nav-links {
+    margin-right: 15px;
+}
+
+.custom-offcanvas {
+    background-color: #2C3E50; /* SAME AS NAVBAR */
+}
+.custom-offcanvas .nav-link {
+    font-weight: 600;
+    padding: 10px 0;
+    
+}
+
+.custom-offcanvas hr {
+    border-color: rgba(255,255,255,0.2);
+}
+
+/* ===================================
+            INDEX
+======================================*/
+.section-bg {
+    width: 100%;
+}
+
+.blue-bg {
+    background-color: #f0f8ff; /* light blue */
+}
+
+.white-bg {
+    background-color: #ffffff;
+}
+
+
+/* HORIZONTAL SCROLL ROW */
+.book-scroll {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+
+}
+
+/* EACH CARD WRAPPER */
+.book-scroll-item {
+    flex: 0 0 auto;
+    width: 220px;
+    scroll-snap-align: start;
+}
+
+.book-scroll {
+    scrollbar-width: none;
+}
+
+/* ===================================
+            BOOK COVER IMAGE
+======================================*/
+
+.book-img {
+    height: 320px;
+    object-fit: cover;
+}
+/* ===================================
+            WISHLIT
+======================================*/
+.wishlist-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.wishlist-page .wishlist-image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    background: #f8f9fa;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+.wishlist-page .wishlist-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/*  HEART BUTTON STYLE */
+.wishlist-page .wishlist-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.85);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/*=========================================================
+                                SEARCH 
+=======================================================*/
+
+.filter-sidebar {
+    background: #f8f9fa;              /* light grey contrast */
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+
+    position: sticky;
+    top: 100px;   /* sticks under navbar */
+}
+
+/* Section spacing */
+.filter-sidebar label {
+    display: block;
+}
+
+/* Make button pop */
+.filter-sidebar .btn-primary {
+    font-weight: 600;
+}

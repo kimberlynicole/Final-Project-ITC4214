@@ -1,0 +1,51 @@
+/* Cart book cover image size and cropping style */
+.cart-cover {
+    width: 70px;
+    height: 90px;
+    object-fit: cover;
+}
+
+/* Empty cart icon styling */
+.cart-empty-icon {
+    font-size: 200px;
+}
+
+@media (max-width: 576px) {
+    .cart-empty-icon {
+        font-size: 120px;
+    }
+}
+
+
+
+/* CART ITEM CONTAINER - needed to position child elements like the remove icon */
+.cart-item {
+    position: relative;
+}
+
+/* REMOVE ICON - positioned at the top-right corner of each cart item */
+.cart-remove-icon {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    text-decoration: none;
+}
+
+
+.checkout-card {
+    background-color: #d9f2ff;  /* light blue */
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.checkout-image {
+    max-height: 300px;
+    object-fit: contain;
+}
+
+/* Book cover image in checkout/cart item list */
+.cart-book-cover {
+    width: 45px;
+    height: 60px;
+    object-fit: cover;
+}
