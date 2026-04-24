@@ -24,10 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$q2iu*iopaxigit)r_(=3ji2#8a4*%9wqed7lga88xuq^8&9a*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [
-    'final-project-itc4214-production.up.railway.app',
+    '.railway.app',
+    '.up.railway.app',
+    'localhost',
+    '127.0.0.1',
 ]
 
 
