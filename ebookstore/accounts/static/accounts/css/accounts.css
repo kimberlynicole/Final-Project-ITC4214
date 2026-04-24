@@ -1,0 +1,36 @@
+/* ================= NAVBAR ================= */
+
+.custom-navbar {
+    background: #2C3E50;
+    padding: 12px 0;
+}
+
+.custom-navbar .nav-link,
+.custom-navbar .navbar-brand {
+    color: white !important;
+}
+
+.custom-navbar .nav-link:hover {
+    opacity: 0.8;
+}
+
+
+
+/* ================= ARROW ================= */
+
+.arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.arrow-icon.rotate {
+    transform: rotate(90deg);
+}
+
+/* ================= COLLAPSE ================= */
+
+.order-body {
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+

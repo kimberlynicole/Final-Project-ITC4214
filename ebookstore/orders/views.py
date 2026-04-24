@@ -1,17 +1,16 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from cart.models import Cart, CartItem
 from books.models import Book
+from .models import Order, OrderItem
 
 # Create your views here.
 def checkout(request):
-
-    # ❗ If NOT logged in → redirect to login
+    # If NOT logged in → redirect to login
     if not request.user.is_authenticated:
         return redirect('/login/?next=/orders/checkout/')
 
-    # 🧠 Move session cart → DB cart after login
+    # Move session cart → DB cart after login
     session_cart = request.session.get('cart')
-
     if session_cart:
         cart, created = Cart.objects.get_or_create(user=request.user)
 
@@ -27,10 +26,10 @@ def checkout(request):
                 cart_item.quantity += item['quantity']
                 cart_item.save()
 
-        # 🧹 Clear session cart
+        # Clear session cart
         del request.session['cart']
 
-    # 📦 Now use DB cart
+    # Now use DB cart
     cart = Cart.objects.get(user=request.user)
     items = cart.items.all()
 
@@ -41,7 +40,6 @@ def checkout(request):
         'total': total
     })
 
-from .models import Order, OrderItem
 
 def place_order(request):
 
@@ -53,13 +51,13 @@ def place_order(request):
 
     total = sum(i.quantity * i.book.price for i in items)
 
-    # 🧾 Create Order
+    # Create Order
     order = Order.objects.create(
         user=request.user,
         total_price=total
     )
 
-    # 📦 Create Order Items
+    # Create Order Items
     for item in items:
         OrderItem.objects.create(
             order=order,
@@ -68,10 +66,10 @@ def place_order(request):
             price=item.book.price
         )
 
-    # 🧹 Clear Cart after purchase
+    # Clear Cart after purchase
     cart.items.all().delete()
 
-    return redirect('order_success')
+    return redirect('orders:order_success')
 
 def order_success(request):
     return render(request, 'orders/success.html')

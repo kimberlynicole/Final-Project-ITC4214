@@ -1,47 +1,175 @@
 {% extends "accounts/layout.html" %}
 
-{% block title %}Dashboard - E-Book Store{% endblock %}
-
 {% block body %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <div class="container">
-    <a class="navbar-brand" href="#">E-Book Store</a>
-    <div class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a href="{% url 'accounts:dashboard' %}" class="nav-link">Dashboard</a></li>
-            <li class="nav-item"><a href="{% url 'accounts:logout' %}" class="nav-link">Logout</a></li>
-        </ul>
-    </div>
-  </div>
-</nav>
 
-<div class="container mt-4">
-    <h2>Welcome, {{ request.user.username }}</h2>
-    
-    <div class="row mt-4">
-        <!-- Recent Activity Section -->
-        <div class="col-md-4">
-            <div class="card p-3">
-                <h5>Recent Activity</h5>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Viewed Books: Fiction, Fantasy</li>
-                    <li class="list-group-item">Wishlist: The Lost Realm</li>
-                    <li class="list-group-item">Ratings: 5 stars</li>
-                </ul>
+<div class="container py-4">
+
+{% if role == "admin" %}
+
+    <h2 class="fw-bold">Admin Dashboard</h2>
+    <p class="text-muted">Manage your e-book store</p>
+
+    <!-- STATS -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm rounded-4">
+                <h6>Books</h6>
+                <h3>{{ total_books }}</h3>
             </div>
         </div>
 
-        <!-- Profile / Info Form Section -->
-        <div class="col-md-8">
-            <div class="card p-3">
-                <h5>Your Info</h5>
-                <form method="POST">
-                    {% csrf_token %}
-                    {{ form }}
-                    <button class="btn btn-primary w-100 mt-3">Update Info</button>
-                </form>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm rounded-4">
+                <h6>Orders</h6>
+                <h3>{{ total_orders }}</h3>
             </div>
         </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm rounded-4">
+                <h6>Users</h6>
+                <h3>{{ total_users }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm rounded-4">
+                <h6>Total Revenue</h6>
+                <h3>€{{ total_revenue }}</h3>
+            </div>
+        </div>
+
     </div>
+
+    <!-- SALES GRAPH -->
+    <div class="card p-4 shadow-sm rounded-4 mb-4">
+        <h5>Sales Graph</h5>
+        <canvas id="salesChart"></canvas>
+    </div>
+
+    <!-- RECENT ACTIVITY -->
+    <div class="row mb-4">
+
+        <div class="col-md-6">
+            <h5>Recent Orders</h5>
+
+            {% for o in recent_orders %}
+                <div class="border p-2 mb-2 rounded">
+
+                    <div class="d-flex justify-content-between align-items-center order-toggle"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#order{{ o.id }}"
+                        style="cursor:pointer;">
+
+                        <strong>
+                            <i class="bi bi-receipt"></i> Order #{{ o.id }}
+                        </strong>
+
+                        <i class="bi bi-chevron-right arrow-icon"></i>
+                    </div>
+
+                    <div id="order{{ o.id }}" class="collapse order-body mt-2">
+                        <small>
+                            User: {{ o.user.username }} <br>
+                            Book: {{ o.book.title }} <br>
+                            Price: €{{ o.total_price }}
+                        </small>
+                    </div>
+
+                </div>
+            {% empty %}
+                <p>No orders yet</p>
+            {% endfor %}
+
+        </div>
+
+        <div class="col-md-6">
+            <h5>Recent Users</h5>
+
+            {% for u in recent_users %}
+                <div class="border p-2 mb-2 rounded">
+                    {{ u.username }}
+                </div>
+            {% empty %}
+                <p>No users yet</p>
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <!-- TOP BOOKS -->
+    <div class="card p-4 shadow-sm rounded-4">
+        <h5>Top Selling Books</h5>
+
+        {% for book in top_books|slice:":5" %}
+            <div class="border p-2 mb-2 rounded">
+                {{ book.title }} - Sold: {{ book.sold }}
+            </div>
+        {% empty %}
+            <p>No sales yet</p>
+        {% endfor %}
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- BOOK MANAGEMENT 
+    <!-========================== -->
+
+    <div class="card p-4 shadow-sm rounded-4 mt-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Book Management</h5>
+
+            <a href="{% url 'accounts:add_book' %}" class="btn btn-success btn-sm">
+                + Add Book
+            </a>
+        </div>
+
+        {% include "accounts/book_management.html" with books=books|slice:":5" %}
+
+        <!-- VIEW MORE -->
+        <div class="text-center mt-3">
+            <a href="{% url 'accounts:admin_books' %}" class="btn btn-outline-primary btn-sm">
+                View More Books
+            </a>
+        </div>
+
+    </div>
+
+    <!-- PASS DATA -->
+    <canvas id="salesChart"></canvas>
+
+    <div id="salesDataContainer"
+        data-labels="{{ labels|join:',' }}"
+        data-values="{{ values|join:',' }}">
+    </div>
+
+{% else %}
+
+    <h2 class="fw-bold">My Dashboard</h2>
+
+    <div class="card p-4 shadow-sm rounded-4 mb-4">
+        <h5>My Profile</h5>
+        <p>{{ profile.bio }}</p>
+    </div>
+
+    <div class="card p-4 shadow-sm rounded-4">
+        <h5>My Orders</h5>
+
+        {% for o in user_orders %}
+            <div class="border p-2 mb-2 rounded">
+                Order #{{ o.id }} - {{ o.total_price }}€
+            </div>
+        {% empty %}
+            <p>No orders yet</p>
+        {% endfor %}
+
+    </div>
+
+{% endif %}
+
 </div>
+
 {% endblock %}

@@ -88,7 +88,7 @@
 
           {% endif %}
 
-          <!-- WISHLIST (always visible) -->
+          <!------------- WISHLIST--------->
           {% if user.is_authenticated %}
 
           <button type="button"
@@ -104,8 +104,8 @@
           </button>
 
           {% else %}
-
-          <a href="{% url 'accounts:login' %}?next={{ request.path }}"
+        <!--If the user is NOT logged in and clicks the heart: go in login page and after login return to the same page-->
+          <a href="{% url 'accounts:login' %}?next={{ request.path }}"    
             class="wishlist-btn">
 
             <i class="bi bi-heart text-danger fs-3"></i>

@@ -3,15 +3,19 @@
 {% block body %}
 
 <!-- NEW BOOKS -->
-<div class="section-bg blue-bg ">
+<div class="section-bg blue-bg">
   <div class="container py-5">
 
     <h2 class="mb-4">Recently Added</h2>
 
-    <div class="d-flex overflow-auto">
+    <div class="book-scroll">
+
       {% for book in new_books %}
-        {% include 'books/book_card.html' %}
+        <div class="book-scroll-item">
+          {% include 'books/book_card.html' %}
+        </div>
       {% endfor %}
+
     </div>
 
   </div>
@@ -24,10 +28,14 @@
 
     <h2 class="mb-4">Best Sellers</h2>
 
-    <div class="d-flex overflow-auto">
+    <div class="book-scroll">
+
       {% for book in best_sellers %}
-        {% include 'books/book_card.html' %}
+        <div class="book-scroll-item">
+          {% include 'books/book_card.html' %}
+        </div>
       {% endfor %}
+
     </div>
 
   </div>
@@ -40,10 +48,14 @@
 
     <h2 class="mb-4">Trending</h2>
 
-    <div class="d-flex overflow-auto">
+    <div class="book-scroll">
+
       {% for book in trending %}
-        {% include 'books/book_card.html' %}
+        <div class="book-scroll-item">
+          {% include 'books/book_card.html' %}
+        </div>
       {% endfor %}
+
     </div>
 
   </div>

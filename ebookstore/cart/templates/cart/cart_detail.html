@@ -5,58 +5,64 @@
 
   <h2 class="fw-bold mb-4">Your Cart</h2>
 
-  {% if user.is_authenticated %}
+  {% if items %}
 
-    {% if items %}
+    <div class="list-group shadow-sm">
 
-      <div class="list-group shadow-sm">
+      {% for item in items %}
 
-        {% for item in items %}
-          {% include 'cart/cart_item.html' %}
-        {% endfor %}
+      <div class="list-group-item cart-item d-flex justify-content-between align-items-center py-3">
+
+        <a href="{% url 'cart:remove_from_cart' item.id %}"
+          class="cart-remove-icon text-danger fs-5">
+          <i class="bi bi-trash"></i>
+        </a>
+
+        <div class="d-flex align-items-center">
+
+          <img src="{{ item.cover.url }}"
+              class="rounded me-3 cart-cover">
+
+          <div>
+            <h6 class="mb-1">{{ item.title }}</h6>
+            <small class="text-muted">{{ item.author }}</small>
+          </div>
+
+        </div>
+
+        <div class="text-end fw-bold">
+          <h5>€{{ item.price }}</h5>
+        </div>
 
       </div>
 
-      {% include 'cart/cart_total.html' %}
+      {% endfor %}
 
-    {% else %}
+    </div>
 
-      {% include 'cart/empty_cart.html' %}
+    <div class="mt-4 p-4 bg-light rounded d-flex justify-content-between align-items-center shadow-sm">
 
-    {% endif %}
+      <h5 class="mb-0">Total: €{{ total }}</h5>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'cart:checkout' %}" class="btn btn-primary">Checkout</a>
+      {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-secondary">Login to Checkout</a>
+      {% endif %}
+
+    </div>
 
   {% else %}
 
-    {% if session_cart %}
+    <div class="text-center py-4">
+      <i class="bi bi-cart-x text-muted cart-empty-icon"></i>
+      <h3 class="fw-bold">Your cart is currently empty</h3>
+      <p class="text-muted mb-4">You haven't added any books yet.</p>
 
-      <div class="list-group shadow-sm">
-
-        {% for key, item in session_cart.items %}
-
-          <div class="list-group-item d-flex justify-content-between">
-
-            <div>
-              <h6>{{ item.title }}</h6>
-              <small class="text-muted">Digital Book</small>
-            </div>
-
-            <div class="fw-bold text-success">
-              €{{ item.price }}
-            </div>
-
-          </div>
-
-        {% endfor %}
-
-      </div>
-
-      {% include 'cart/cart_total.html' %}
-
-    {% else %}
-
-      {% include 'cart/empty_cart.html' %}
-
-    {% endif %}
+      <a href="{% url 'books:books' %}" class="btn btn-primary btn-lg">
+        Browse Books
+      </a>
+    </div>
 
   {% endif %}
 

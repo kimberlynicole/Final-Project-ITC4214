@@ -1,0 +1,89 @@
+{% extends "accounts/layout.html" %}
+
+{% block body %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8 col-lg-6">
+
+            <!-- CARD -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+                <!-- HEADER -->
+                <div class="p-4 text-center text-white"
+                     style="background: linear-gradient(135deg, #2C3E50, #34495E);">
+
+                    <h3 class="mb-1 fw-bold">Edit Profile</h3>
+                    <small class="opacity-75">Update your account information</small>
+
+                </div>
+
+                <!-- BODY -->
+                <div class="p-4">
+
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- PROFILE IMAGE -->
+                        <div class="text-center mb-4">
+
+                            {% if request.user.profile.image %}
+                                <img id="previewImage"
+                                     src="{{ request.user.profile.image.url }}"
+                                     class="rounded-circle shadow mb-3"
+                                     width="120"
+                                     height="120"
+                                     style="object-fit: cover; border: 3px solid #e9ecef;">
+                            {% else %}
+                                <img id="previewImage"
+                                     src="https://via.placeholder.com/120"
+                                     class="rounded-circle shadow mb-3"
+                                     width="120"
+                                     height="120"
+                                     style="object-fit: cover; border: 3px solid #e9ecef;">
+                            {% endif %}
+
+                            <div class="mt-2">
+                                {{ profile_form.image }}
+                            </div>
+
+                        </div>
+
+                        <!-- USERNAME -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Username</label>
+                            {{ user_form.username }}
+                        </div>
+
+                        <!-- EMAIL -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email</label>
+                            {{ user_form.email }}
+                        </div>
+
+                        <!-- BIO -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Bio</label>
+                            {{ profile_form.bio }}
+                        </div>
+
+                        <!-- SAVE -->
+                        <button class="btn btn-primary w-100 py-2 mt-3 rounded-3">
+                            Save Changes
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "accounts/layout.html" %}
+
+{% block body %}
+
+<div class="container py-4">
+
+    <!-- ================= TOP TITLE ================= -->
+    <div class="mb-3">
+        <h2>Manage Books</h2>
+    </div>
+
+    <!-- ================= SECOND ROW (FILTER + ADD) ================= -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <!-- FILTER (LEFT SIDE) -->
+        <form method="GET" class="d-flex gap-2">
+
+            <select name="category" class="form-select form-select-sm" id="categoryFilter">
+
+                <option value="">All Categories</option>
+
+                {% for c in categories %}
+                    {% if selected_category == c.id %}
+                        <option value="{{ c.id }}" selected>
+                            {{ c.name }}
+                        </option>
+                    {% else %}
+                        <option value="{{ c.id }}">
+                            {{ c.name }}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+
+            </select>
+
+        </form>
+
+        <!-- ADD BOOK (RIGHT SIDE) -->
+        <a href="{% url 'accounts:add_book' %}" class="btn btn-success">
+            <i class="bi bi-plus-lg"></i> Add Book
+        </a>
+
+    </div>
+
+    <!-- ================= SAFETY MESSAGES ================= -->
+
+    {% if not categories %}
+        <div class="alert alert-warning mt-2">
+            No categories found in database.
+        </div>
+    {% endif %}
+
+    <!-- ================= BOOK LIST (REPLACED ONLY) ================= -->
+
+    <div class="card shadow-sm rounded-4 p-3">
+
+        {% include "accounts/book_management.html" %}
+
+    </div>
+
+</div>
+
+
+
+{% endblock %}

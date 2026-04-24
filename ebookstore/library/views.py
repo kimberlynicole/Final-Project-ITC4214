@@ -44,13 +44,11 @@ def remove_from_library(request, book_id):
 
 
 
-
-
 def read_book(request, book_id):
 
     if not request.user.is_authenticated:
         return redirect('accounts:login')
-    lib = Library.objects.get(user=request.user, book_id=book_id)
+    lib = get_object_or_404(Library, user=request.user, book_id=book_id)
     book = get_object_or_404(Book, id=book_id)
     total_pages = book.pages if book.pages > 0 else 1
     page = int(request.GET.get("page", lib.last_page or 1))

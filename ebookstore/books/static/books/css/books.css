@@ -1,4 +1,35 @@
 /* ===================================
+            NARVBAR
+======================================*/
+/* Custom Navbar Color */
+.custom-navbar {
+    background-color: #2C3E50; /* deep blue */
+}
+
+/* Navbar links styling */
+.navbar-nav .nav-link {
+    font-weight: 600;   /* semi-bold */
+}
+
+/* Space between nav-links*/
+.navbar-nav .left-nav-links {
+    margin-right: 15px;
+}
+
+.custom-offcanvas {
+    background-color: #2C3E50; /* SAME AS NAVBAR */
+}
+.custom-offcanvas .nav-link {
+    font-weight: 600;
+    padding: 10px 0;
+    
+}
+
+.custom-offcanvas hr {
+    border-color: rgba(255,255,255,0.2);
+}
+
+/* ===================================
             INDEX
 ======================================*/
 .section-bg {
@@ -13,6 +44,35 @@
     background-color: #ffffff;
 }
 
+
+/* HORIZONTAL SCROLL ROW */
+.book-scroll {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+
+}
+
+/* EACH CARD WRAPPER */
+.book-scroll-item {
+    flex: 0 0 auto;
+    width: 220px;
+    scroll-snap-align: start;
+}
+
+.book-scroll {
+    scrollbar-width: none;
+}
+
+/* ===================================
+            BOOK COVER IMAGE
+======================================*/
+
+.book-img {
+    height: 320px;
+    object-fit: cover;
+}
 /* ===================================
             WISHLIT
 ======================================*/
@@ -59,7 +119,6 @@
     right: 8px;
 
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    cursor: pointer;
 }
 
 /*=========================================================

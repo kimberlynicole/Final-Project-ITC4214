@@ -1,10 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Sum, Avg, Q
+from django.http import JsonResponse
 from .models import Book, Category, Wishlist, Rating
-from django.db.models import Sum, Avg
 from .forms import RatingForm
 from library.models import Library
-from django.http import JsonResponse
-from django.db.models import Q
+
 
 
 # ============================================================
@@ -19,8 +19,8 @@ def index(request):
 
     # BEST SELLERS (based on purchases)
     best_sellers = Book.objects.annotate(
-        total_sold=Sum('orderitem__quantity')
-        ).order_by('-total_sold')[:5]
+        total_sold=Sum('order_items__quantity')
+    ).filter(total_sold__gt=0).order_by('-total_sold')[:5]
 
 
     # TRENDING (based on ratings)
@@ -43,16 +43,20 @@ def index(request):
 def books_view(request):
 
     books = Book.objects.all()
-    main_categories = Category.objects.filter(parent=None)
-
     category_id = request.GET.get('category')
 
+    selected_category = None
+
     if category_id:
+        selected_category = Category.objects.filter(id=category_id).first()
         books = books.filter(category_id=category_id)
+
+    main_categories = Category.objects.filter(parent=None).prefetch_related('subcategories')
 
     return render(request, 'books/books.html', {
         'books': books,
-        'main_categories': main_categories
+        'main_categories': main_categories,
+        'selected_category': selected_category
     })
 
 
@@ -148,7 +152,6 @@ def add_review(request, book_id):
 # ============================================================
 
 
-
 def search(request):
     query = request.GET.get('q')
     category = request.GET.get('category')
@@ -224,8 +227,6 @@ def remove_from_wishlist(request, book_id):
     ).delete()
 
     return redirect('books:wishlist')
-
-
 
 
 

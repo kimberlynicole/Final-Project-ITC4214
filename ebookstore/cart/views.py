@@ -1,8 +1,10 @@
-from django.shortcuts import render, redirect, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from books.models import Book
 from .models import Cart, CartItem
 from .forms import PaymentForm
 from library.models import Library
+from orders.models import Order, OrderItem
+from django.contrib import messages
 
 
 # Create your views here.
@@ -17,17 +19,14 @@ def add_to_cart(request, id):
             cart=cart,
             book=book
         )
-
     else:
-        cart = request.session.get('cart', {})
+            cart = request.session.get('cart', {})
+            book_id = str(id)
 
-        if str(id) not in cart:
-            cart[str(id)] = {
-                'title': book.title,
-                'price': str(book.price)
-            }
+            cart[book_id] = book_id   
 
-        request.session['cart'] = cart
+            request.session['cart'] = cart
+            request.session.modified = True
 
     return redirect('cart:cart_detail')
 
@@ -35,6 +34,9 @@ def add_to_cart(request, id):
 
 def cart_detail(request):
 
+    # =========================
+    # LOGGED IN USER
+    # =========================
     if request.user.is_authenticated:
 
         cart, created = Cart.objects.get_or_create(user=request.user)
@@ -42,15 +44,48 @@ def cart_detail(request):
 
         total = sum(item.book.price for item in items)
 
+        normalized_items = []
+
+        for item in items:
+            normalized_items.append({
+                "id": item.book.id,
+                "title": item.book.title,
+                "author": item.book.author,
+                "price": item.book.price,
+                "cover": item.book.cover
+            })
+
         return render(request, 'cart/cart_detail.html', {
-            'items': items,
+            'items': normalized_items,
             'total': total
         })
 
+    # =========================
+    # GUEST USER
+    # =========================
     else:
+
+        session_cart = request.session.get('cart', {})
+
+        normalized_items = []
+        total = 0
+
+        for book_id in session_cart.keys():
+            book = Book.objects.get(id=book_id)
+
+            normalized_items.append({
+                "id": book.id,
+                "title": book.title,
+                "author": book.author,
+                "price": book.price,
+                "cover": book.cover
+            })
+
+            total += book.price
+
         return render(request, 'cart/cart_detail.html', {
-            'items': [],
-            'total': 0
+            'items': normalized_items,
+            'total': total
         })
     
 
@@ -88,9 +123,10 @@ def clear_cart(request):
 
 
 def checkout(request):
-    # FORCE LOGIN BEFORE ANYTHING
+
     if not request.user.is_authenticated:
         return redirect('accounts:login')
+
     cart = Cart.objects.get(user=request.user)
     items = cart.items.all()
     total = sum(item.book.price for item in items)
@@ -100,7 +136,33 @@ def checkout(request):
     if request.method == "POST":
 
         if form.is_valid():
+
+            # CREATE ORDER
+            order = Order.objects.create(
+                user=request.user,
+                total_price=total
+            )
+
+            for item in items:
+                OrderItem.objects.create(
+                    order=order,
+                    book=item.book,
+                    quantity=1,
+                    price=item.book.price
+                )
+
+                Library.objects.get_or_create(
+                    user=request.user,
+                    book=item.book
+                )
+
+            cart.items.all().delete()
+
+            messages.success(request, "Payment successful!")
             return redirect('cart:success')
+
+        else:
+            messages.error(request, "Please fix the errors below.")
 
     return render(request, 'cart/checkout.html', {
         'form': form,
@@ -110,10 +172,8 @@ def checkout(request):
 
 
 
-
 def payment_simulation(request):
 
-    # BLOCK GUEST USERS
     if not request.user.is_authenticated:
         return redirect('accounts:login')
 
@@ -125,8 +185,26 @@ def payment_simulation(request):
 
         if form.is_valid():
 
-            # MOVE BOOKS TO LIBRARY
+            # CALCULATE TOTAL
+            total = sum(item.book.price for item in cart.items.all())
+
+            # CREATE ORDER
+            order = Order.objects.create(
+                user=request.user,
+                total_price=total
+            )
+
+            # LOOP ITEMS
             for item in cart.items.all():
+
+                OrderItem.objects.create(
+                    order=order,
+                    book=item.book,
+                    quantity=1,
+                    price=item.book.price
+                )
+
+                # ADD TO LIBRARY
                 Library.objects.get_or_create(
                     user=request.user,
                     book=item.book
@@ -135,23 +213,17 @@ def payment_simulation(request):
             # CLEAR CART
             cart.items.all().delete()
 
+            # SUCCESS MESSAGE
+            messages.success(request, "Payment successful! Books added to your library.")
+
             return redirect('cart:success')
 
         else:
-            return render(request, 'cart/checkout.html', {
-                'form': form,
-                'items': cart.items.all(),
-                'total': sum(item.book.price for item in cart.items.all())
-            })
+            messages.error(request, "Payment failed. Please fix the form.")
 
-    # GET request
-    form = PaymentForm()
+    return redirect('cart:checkout')
 
-    return render(request, 'cart/checkout.html', {
-        'form': form,
-        'items': cart.items.all(),
-        'total': sum(item.book.price for item in cart.items.all())
-    })
+
 
 
 def payment_success(request):
