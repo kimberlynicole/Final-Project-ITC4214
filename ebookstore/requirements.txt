@@ -6,7 +6,9 @@ crispy-bootstrap5==2026.3
 Django==6.0.3
 django-cloudinary-storage==0.3.0
 django-crispy-forms==2.6
+gunicorn==25.3.0
 idna==3.13
+packaging==26.2
 pillow==12.2.0
 requests==2.33.1
 six==1.17.0
