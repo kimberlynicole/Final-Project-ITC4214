@@ -27,10 +27,13 @@ SECRET_KEY = 'django-insecure-$q2iu*iopaxigit)r_(=3ji2#8a4*%9wqed7lga88xuq^8&9a*
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [
-    '.railway.app',
-    '.up.railway.app',
-    'localhost',
-    '127.0.0.1',
+    "final-project-itc4214-production.up.railway.app",
+    "127.0.0.1",
+    "localhost"
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://final-project-itc4214-production.up.railway.app"
 ]
 
 
@@ -43,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary',
+    'cloudinary_storage',
     'accounts',
     'books',
     'cart',
@@ -50,9 +55,10 @@ INSTALLED_APPS = [
     'library',
     'crispy_forms',
     'crispy_bootstrap5',
-
     
+ 
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -137,8 +143,16 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CRISPY_TEMPLATE_PACK="bootstrap5"
 
 # Media files (uploaded images)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+#MEDIA_URL = '/media/'
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": "dmo7ix5rk",
+    "API_KEY": "834222372482653",
+    "API_SECRET": "3nhQKaJjEWuiVAk4roHDgkYe_4"
+}
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
