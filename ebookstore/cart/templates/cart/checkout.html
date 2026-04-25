@@ -58,20 +58,21 @@
                     <hr>
 
                     <!-- FORM -->
+                    <!-- FORM -->
                     <form method="POST">
-                    {% csrf_token %}
-                     {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-success">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                        
                         {% csrf_token %}
+
+                        <!-- MESSAGES (always separate from form) -->
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-success">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
                         {{ form|crispy }}
 
-                       
-                        {% endif %}
                         <div class="d-grid gap-2 mt-3">
 
                             <button type="submit" class="btn btn-primary btn-lg shadow-sm">

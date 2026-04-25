@@ -127,75 +127,30 @@ def checkout(request):
     if not request.user.is_authenticated:
         return redirect('accounts:login')
 
-    cart = Cart.objects.get(user=request.user)
+    cart = get_object_or_404(Cart, user=request.user)
     items = cart.items.all()
+
     total = sum(item.book.price for item in items)
 
-    form = PaymentForm(request.POST or None)
+    form = PaymentForm()
 
-    if request.method == "POST":
-
-        if form.is_valid():
-
-            # CREATE ORDER
-            order = Order.objects.create(
-                user=request.user,
-                total_price=total
-            )
-
-            for item in items:
-                OrderItem.objects.create(
-                    order=order,
-                    book=item.book,
-                    quantity=1,
-                    price=item.book.price
-                )
-
-                Library.objects.get_or_create(
-                    user=request.user,
-                    book=item.book
-                )
-
-            cart.items.all().delete()
-
-            messages.success(request, "Payment successful!")
-            return redirect('cart:success')
-
-        else:
-            messages.error(request, "Please fix the errors below.")
-
-    return render(request, 'cart/checkout.html', {
-        'form': form,
-        'items': items,
-        'total': total
-    })
-
-
-
-def payment_simulation(request):
-
-    if not request.user.is_authenticated:
-        return redirect('accounts:login')
-
-    cart = get_object_or_404(Cart, user=request.user)
-
+    # =========================
+    # WHEN USER SUBMITS FORM
+    # =========================
     if request.method == "POST":
 
         form = PaymentForm(request.POST)
 
         if form.is_valid():
 
-            # CALCULATE TOTAL
-            total = sum(item.book.price for item in cart.items.all())
-
             # CREATE ORDER
             order = Order.objects.create(
                 user=request.user,
                 total_price=total
             )
 
-            # LOOP ITEMS
-            for item in cart.items.all():
+            # SAVE ITEMS
+            for item in items:
 
                 OrderItem.objects.create(
                     order=order,
@@ -211,9 +166,8 @@ def payment_simulation(request):
                 )
 
             # CLEAR CART
-            cart.items.all().delete()
+            items.delete()
 
-            # SUCCESS MESSAGE
             messages.success(request, "Payment successful! Books added to your library.")
 
             return redirect('cart:success')
@@ -221,7 +175,14 @@ def payment_simulation(request):
         else:
             messages.error(request, "Payment failed. Please fix the form.")
 
-    return redirect('cart:checkout')
+    # =========================
+    # ALWAYS SHOW PAGE + FORM
+    # =========================
+    return render(request, 'cart/checkout.html', {
+        'form': form,
+        'items': items,
+        'total': total
+    })
 
 
 

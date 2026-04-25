@@ -252,21 +252,23 @@
 </div>
 
 <!-- ================= SIMILAR BOOKS ================= -->
-<section class="blue-bg py-5 mt-5"> 
-  <div class="container my-5">
+<section class="blue-bg py-5 mt-5">
+  <div class="container">
 
-    <h3 class="fw-bold mb-4"> Similar Books</h3>
+    <h3 class="fw-bold mb-4">Similar Books</h3>
 
-      <div class="d-flex overflow-auto">
+    <div class="row g-4">
 
-        {% for book in similar_books %}
-          {% include 'books/book_card.html' %}
-        {% empty %}
-          <p class="text-muted">No similar books found.</p>
-        {% endfor %}
+      {% for book in similar_books %}
+        <div class="col-6 col-md-4 col-lg-3">
+          {% include 'books/book_card.html' with book=book %}
+        </div>
+      {% empty %}
+        <p class="text-muted">No similar books found.</p>
+      {% endfor %}
 
-      </div>
+    </div>
+
   </div>
-
 </section>
 {% endblock %}
