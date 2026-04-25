@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary',
+    'cloudinary_storage',
     'accounts',
     'books',
     'cart',
@@ -140,18 +142,15 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CRISPY_TEMPLATE_PACK="bootstrap5"
 
-# Media files (uploaded images and PDFs)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = '/app/media'
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
-# Cloudinary storage (disabled — using local filesystem with persistent volume)
-# CLOUDINARY_STORAGE = {
-#     "CLOUD_NAME": "dmo7ix5rk",
-#     "API_KEY": "834222372482653",
-#     "API_SECRET": "3nhQKaJjEWuiVAk4roHDgkYe_4"
-# }
-# DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+import cloudinary
 
+cloudinary.config(
+    cloud_name="dmo7ix5rk",
+    api_key="834222372482653",
+    api_secret="S3nhQKaJjEWuiVAk4roHDgkYe_4"
+)
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
