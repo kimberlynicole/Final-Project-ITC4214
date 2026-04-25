@@ -1,32 +1,24 @@
-import os
-from books.models import Book
 import cloudinary.uploader
+from books.models import Book
+import os
 
 for b in Book.objects.all():
 
-    if not b.pdf_file:
-        continue
+    if b.pdf_file and hasattr(b.pdf_file, "path"):
 
-    # skip already migrated files
-    if str(b.pdf_file).startswith("http"):
-        print("Already migrated:", b.title)
-        continue
+        path = b.pdf_file.path
 
-    try:
-        print("Uploading:", b.title)
+        if os.path.exists(path):
 
-        file_path = b.pdf_file.path
-
-        with open(file_path, "rb") as f:
             result = cloudinary.uploader.upload(
-                f,
+                path,
                 resource_type="raw"
             )
 
-        b.pdf_file = result["secure_url"]
-        b.save()
+            b.pdf_file = result["secure_url"]
+            b.save()
 
-        print("Done:", b.title)
+            print("FIXED:", b.title)
 
-    except Exception as e:
-        print("FAILED:", b.title, e)
+        else:
+            print("MISSING LOCAL FILE:", b.title)
