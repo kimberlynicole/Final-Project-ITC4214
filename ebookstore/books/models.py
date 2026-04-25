@@ -21,7 +21,7 @@ class Book(models.Model):
     language = models.CharField(max_length=50)
     category = models.ForeignKey(Category, on_delete=models.CASCADE,related_name='books' )
     cover = CloudinaryField('image')
-    pdf_file = CloudinaryField('file', resource_type='raw', folder="pdfs")
+    pdf_file = CloudinaryField('file')
     published_date = models.DateField()
 
     def __str__(self):
