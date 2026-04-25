@@ -142,7 +142,7 @@ CRISPY_TEMPLATE_PACK="bootstrap5"
 
 # Media files (uploaded images and PDFs)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = '/app/media'
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 # Cloudinary storage (disabled — using local filesystem with persistent volume)
