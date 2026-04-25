@@ -143,11 +143,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CRISPY_TEMPLATE_PACK="bootstrap5"
 
 
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": "dmo7ix5rk",
-    "API_KEY": "834222372482653",
-    "API_SECRET": "S3nhQKaJjEWuiVAk4roHDgkYe_4",
-}
+import cloudinary
+
+cloudinary.config(
+    cloud_name="dmo7ix5rk",
+    api_key="834222372482653",
+    api_secret="S3nhQKaJjEWuiVAk4roHDgkYe_4"
+)
 
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'

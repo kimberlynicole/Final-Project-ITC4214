@@ -20,13 +20,13 @@ for b in Book.objects.all():
                 b.cover = result["secure_url"]
                 b.save()
 
-                print(f"✅ Image done: {b.title}")
+                print(f" Image done: {b.title}")
 
             except Exception as e:
-                print(f"❌ Image failed {b.title}: {e}")
+                print(f"Image failed {b.title}: {e}")
 
         else:
-            print(f"❌ Missing image: {b.title}")
+            print(f" Missing image: {b.title}")
 
 
     # =========================
@@ -42,16 +42,16 @@ for b in Book.objects.all():
 
                 result = cloudinary.uploader.upload(
                     pdf_path,
-                    resource_type="raw"   # 🔥 REQUIRED FOR PDFs
+                    resource_type="raw"   # REQUIRED FOR PDFs
                 )
 
                 b.pdf_file = result["secure_url"]
                 b.save()
 
-                print(f"✅ PDF done: {b.title}")
+                print(f" PDF done: {b.title}")
 
             except Exception as e:
-                print(f"❌ PDF failed {b.title}: {e}")
+                print(f" PDF failed {b.title}: {e}")
 
         else:
-            print(f"❌ Missing PDF: {b.title}")
+            print(f" Missing PDF: {b.title}")

@@ -36,16 +36,16 @@ for book in Book.objects.all():
 
     correct_path = os.path.join(MEDIA_ROOT, db_path)
 
-    # ✅ CASE 1: file exists → upload normally
+    #  file exists → upload normally
     if os.path.exists(correct_path):
-        print(f"✅ OK: {book.title}")
+        print(f"OK: {book.title}")
 
         with open(correct_path, "rb") as f:
             book.cover.save(filename, f, save=True)
 
-    # ❌ CASE 2: broken filename → try to FIX
+    
     else:
-        print(f"⚠️ Fixing: {book.title} → {filename}")
+        print(f" Fixing: {book.title} → {filename}")
 
         found = find_file(filename)
 
@@ -57,4 +57,4 @@ for book in Book.objects.all():
                 book.cover.save(new_name, f, save=True)
 
         else:
-            print(f"   ❌ Still missing: {filename}")
+            print(f"  Still missing: {filename}")
