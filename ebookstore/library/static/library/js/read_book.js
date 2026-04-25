@@ -37,12 +37,15 @@ function renderPage(num) {
     });
 }
 
-/* LOAD PDF */
-pdfjsLib.getDocument(url).promise.then(pdf => {
+pdfjsLib.getDocument({
+    url: url,
+    withCredentials: false
+}).promise.then(pdf => {
 
     pdfDoc = pdf;
-
     renderPage(pageNum);
 
+}).catch(err => {
+    console.error("PDF LOAD ERROR:", err);
 });
 
