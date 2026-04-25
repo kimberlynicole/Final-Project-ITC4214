@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 # Create your models here.
 
@@ -19,8 +20,8 @@ class Book(models.Model):
     pages = models.IntegerField()
     language = models.CharField(max_length=50)
     category = models.ForeignKey(Category, on_delete=models.CASCADE,related_name='books' )
-    cover = models.ImageField(upload_to='books/')
-    pdf_file = models.FileField(upload_to='books/pdfs/') 
+    cover = CloudinaryField('image')
+    pdf_file = CloudinaryField('file', resource_type='raw') 
     published_date = models.DateField()
 
     def __str__(self):
